@@ -1,0 +1,33 @@
+#!/bin/bash
+
+GUM=$(echo -e "Add\nCommit\n" | gum filter)
+
+function repoExists() {
+  if [[ ! -d .git ]]; then
+    echo "Not a git repository"
+    exit 1
+  fi
+}
+
+function _add() {
+  repoExists
+  gum confirm "Only 'git add .' is supported for now, continue ? : " && git add .
+}
+
+function _commit() {
+  repoExists
+  GIT_MSG_TITLE=$(gum input --placeholder "Title ")
+  GIT_MSG_DESC=$(gum write --width 70 --placeholder "Describe the commit (CTRL+D to finish)")
+  while [[ -z $GIT_MSG_TITLE ]]; do
+    GIT_MSG_TITLE=$(gum input --placeholder "No title given, please enter a title to commit")
+  done
+  git _commit -m "$GIT_MSG_TITLE" -m "$GIT_MSG_DESC"
+  echo '1'
+}
+
+# Check if the user selected a commit or push but check if a .git folder exists
+if [[ $GUM == "Commit" ]]; then
+  _commit
+elif [[ $GUM == "Add" ]]; then
+  _add
+fi
