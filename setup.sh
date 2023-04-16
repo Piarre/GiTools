@@ -4,6 +4,7 @@ if [ ! -d "$HOME/.gitools" ]; then
   mkdir "$HOME/.gitools"
 fi
 
+# shellcheck disable=SC2164
 cd "$HOME/.gitools"
 curl -k https://raw.githubusercontent.com/Piarre/GiTools/main/gitools -o gitools
 if [ ! -f ~/.bashrc ]; then
