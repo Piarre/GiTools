@@ -6,7 +6,14 @@ fi
 
 # shellcheck disable=SC2164
 cd "$HOME/.gitools"
-curl -k https://raw.githubusercontent.com/Piarre/GiTools/main/gitools -o gitools
+
+# Check if we use curl or wget
+if [ -x "$(command -v curl)" ]; then
+  curl -LJk https://github.com/Piarre/GiTools/releases/download/v1.0.0/gitools -o gitools
+elif [ -x "$(command -v wget)" ]; then
+  wget --no-check-certificate --content-disposition https://github.com/Piarre/GiTools/releases/download/v1.0.0/gitools
+# shellcheck disable=SC1073
+if
 if [ ! -f ~/.bashrc ]; then
   touch ~/.bashrc
 fi
