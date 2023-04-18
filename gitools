@@ -1,6 +1,16 @@
 #!/bin/bash
 
-GUM=$(echo -e "Add\nCommit\n" | gum filter)
+VERSION="v1.0.0"
+GUM=$(echo -e "Add\nCommit\nPush" | gum filter)
+
+function checkRelease() {
+  LATEST_RELEASE=$(curl -ks https://api.github.com/repos/Piarre/GiTools/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+
+  if [[ "$LATEST_RELEASE" != "$VERSION" ]]; then
+    echo -e "\e[32mNew update is available: \e[92m$LATEST_RELEASE\e[0m \e[32mat https://github.com/Piarre/GiTools"
+    exit 0
+  fi
+}
 
 function repoExists() {
   if [[ ! -d .git ]]; then
@@ -41,8 +51,21 @@ function _commit() {
   exit 0
 }
 
+function _push() {
+  repoExists
+  gum confirm "Push to origin ?" && git push
+  exit 0
+}
+
 if [[ $GUM == "Commit" ]]; then
+  checkRelease
   _commit
 elif [[ $GUM == "Add" ]]; then
+  checkRelease
   _add
+elif [[ $GUM == "Push" ]]; then
+  checkRelease
+  _push
 fi
+
+checkRelease
