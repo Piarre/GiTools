@@ -17,7 +17,21 @@ function _add() {
 
 function _commit() {
   repoExists
-  GIT_MSG_TITLE=$(gum input --placeholder "Title ")
+  USE_TYPES=$(gum confirm 'Use commit types like "(feat): Added config manager" ?')
+  if [[ $USE_TYPES -eq 0 ]]; then
+    TYPE=$(gum choose "fix" "feat" "docs" "style" "refactor" "test" "chore" "revert")
+    COMMIT_SCOPE=$(gum input --placeholder "($TYPE): Scope")
+    if [[ -z $COMMIT_SCOPE ]]; then
+      echo "You did not entered a title, the commit will be named '($TYPE): $(date)'"
+      GIT_MSG_DESC=$(gum write --width 70 --placeholder "Describe the commit (CTRL+D to finish)")
+      gum confirm "Commit changes ?" && git commit -m "($TYPE): $(date)" -m "$GIT_MSG_DESC"
+      exit 0
+    fi
+    GIT_MSG_DESC=$(gum write --width 70 --placeholder "Describe the commit (CTRL+D to finish)")
+    gum confirm "Commit changes ?" && git commit -m "($TYPE): $COMMIT_SCOPE" -m "$GIT_MSG_DESC"
+    exit 0
+  fi
+  GIT_MSG_TITLE=$(gum input --placeholder "Title")
   GIT_MSG_DESC=$(gum write --width 70 --placeholder "Describe the commit (CTRL+D to finish)")
   if [[ -z $GIT_MSG_TITLE ]]; then
     GIT_MSG_TITLE="Commit from $(date)"
