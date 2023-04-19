@@ -4,12 +4,12 @@ VERSION="v1.0.1"
 
 function checkRelease() {
   LATEST_RELEASE=$(curl -ks https://api.github.com/repos/Piarre/GiTools/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
-
   if [[ "$LATEST_RELEASE" != "$VERSION" ]]; then
     echo -e "\e[32mNew update is available: \e[92m$LATEST_RELEASE\e[0m \e[32mat https://github.com/Piarre/GiTools/releases/"
   fi
 }
-checkRelease
+
+echo $(checkRelease)
 GUM=$(echo -e "Add\nCommit\nPush\nQuit" | gum filter)
 function repoExists() {
   if [[ ! -d .git ]]; then
@@ -67,5 +67,3 @@ elif [[ $GUM == "Push" ]]; then
 elif [[ $GUM == "Quit" ]]; then
   exit 0
 fi
-
-checkRelease
