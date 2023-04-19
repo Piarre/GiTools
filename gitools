@@ -14,8 +14,8 @@ function checkRelease() {
 
 function repoExists() {
   if [[ ! -d .git ]]; then
-    echo "Not a git repository"
-    exit 1
+    gum confirm "You're not in a git repository, initliaze a new one ?" && git init 
+    exit 0
   fi
 }
 
