@@ -1,27 +1,28 @@
 #!/bin/bash
 
-VERSION="v1.0.0"
-GUM=$(echo -e "Add\nCommit\nPush" | gum filter)
+VERSION="v1.0.1"
 
 function checkRelease() {
   LATEST_RELEASE=$(curl -ks https://api.github.com/repos/Piarre/GiTools/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
 
   if [[ "$LATEST_RELEASE" != "$VERSION" ]]; then
-    echo -e "\e[32mNew update is available: \e[92m$LATEST_RELEASE\e[0m \e[32mat https://github.com/Piarre/GiTools"
-    exit 0
+    echo -e "\e[32mNew update is available: \e[92m$LATEST_RELEASE\e[0m \e[32mat https://github.com/Piarre/GiTools/releases/"
   fi
 }
-
+checkRelease
+GUM=$(echo -e "Add\nCommit\nPush\nQuit" | gum filter)
 function repoExists() {
   if [[ ! -d .git ]]; then
-    gum confirm "You're not in a git repository, initliaze a new one ?" && git init 
+    gum confirm "You're not in a git repository, initialize a new one ?" && git init
     exit 0
   fi
 }
 
 function _add() {
   repoExists
-  gum confirm "Stage all ? : " && git add .
+  gum confirm "Stage all ? : " && git add . && exit 0
+  echo "Select file(s) to stage (CTRL+D to finish) :"
+  git add $(gum choose --unselected-prefix="[ ] " --cursor-prefix "[ ] " --selected-prefix "[x] " --no-limit $(git status -s -uno -z | awk -v RS='\0' '{print $2}' | tr '\n' ' '))
   exit 0
 }
 
@@ -58,14 +59,13 @@ function _push() {
 }
 
 if [[ $GUM == "Commit" ]]; then
-  checkRelease
   _commit
 elif [[ $GUM == "Add" ]]; then
-  checkRelease
   _add
 elif [[ $GUM == "Push" ]]; then
-  checkRelease
   _push
+elif [[ $GUM == "Quit" ]]; then
+  exit 0
 fi
 
 checkRelease
