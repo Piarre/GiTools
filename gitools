@@ -9,7 +9,7 @@ function checkRelease() {
   fi
 }
 
-echo $(checkRelease)
+checkRelease
 
 GUM=$(echo -e "Add\nCommit\nPush\nQuit" | gum filter)
 function repoExists() {
