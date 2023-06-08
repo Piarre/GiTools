@@ -1,6 +1,6 @@
 #!/bin/sh
 
-LATEST_RELEASE=$(curl -ks https://api.github.com/repos/Piarre/GiTools/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+LATEST_RELEASE=$(curl -s https://api.github.com/repos/Piarre/GiTools/releases/latest | grep -o '"tag_name": "[^"]*' | grep -o '[^"]*$')
 if [ ! -d "$HOME/.gitools" ]; then
   mkdir "$HOME/.gitools"
 fi
